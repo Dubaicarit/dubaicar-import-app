@@ -1,0 +1,49 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
+
+model Vehicle {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  make       String
+  model      String
+  trim       String?
+  year       Int?
+  month      Int?
+  engine     String?
+  fuel       String?
+  euro       String?
+  transmission String?
+  drive      String?
+  km         Int?
+  origin     String?  // GCC/EU/USA
+  vin        String?
+  options    String?
+  notes      String?
+
+  costs      Cost[]
+  market     Market?
+}
+
+model Cost {
+  id        String   @id @default(uuid())
+  vehicleId String
+  label     String
+  amount    Decimal  @db.Decimal(12,2)
+  note      String?
+  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model Market {
+  id            String   @id @default(uuid())
+  vehicleId     String   @unique
+  eurotaxBase   Decimal? @db.Decimal(12,2)
+  eurotaxKm     Decimal? @db.Decimal(12,2)
+  minIT         Decimal? @db.Decimal(12,2)
+  avgIT         Decimal? @db.Decimal(12,2)
+  minLink       String?
+  otherLinks    String?
+  target        Decimal? @db.Decimal(12,2)
+  vehicle       Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
