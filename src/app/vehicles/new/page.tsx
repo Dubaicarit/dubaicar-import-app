@@ -3,19 +3,43 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
+// Stato del form
 type FormState = {
-  make: string; model: string; trim: string; year: string; month: string;
-  engine: string; fuel: string; euro: string; transmission: string; drive: string;
-  km: string; origin: string; vin: string; options: string; notes: string;
+  make: string
+  model: string
+  trim: string
+  year: string
+  month: string
+  engine: string
+  fuel: string
+  euro: string
+  transmission: string
+  drive: string
+  km: string
+  origin: string
+  vin: string
+  options: string
+  notes: string
 }
 
-type InputProps = { label: string; name: keyof FormState; placeholder?: string; value: string; onChange: (v: string) => void }
+// ✅ Props del campo: niente "name" (non serve)
+type InputProps = {
+  label: string
+  placeholder?: string
+  value: string
+  onChange: (v: string) => void
+}
 
-function Field({ label, value, onChange, placeholder }: InputProps) {
+function Field({ label, placeholder, value, onChange }: InputProps) {
   return (
     <div className="grid gap-1">
       <label className="text-sm text-gray-700">{label}</label>
-      <input className="rounded-lg border p-2" value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder || ''}/>
+      <input
+        className="rounded-lg border p-2"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder || ''}
+      />
     </div>
   )
 }
@@ -23,11 +47,14 @@ function Field({ label, value, onChange, placeholder }: InputProps) {
 export default function NewVehiclePage() {
   const r = useRouter()
   const [loading, setLoading] = useState(false)
+
   const [form, setForm] = useState<FormState>({
-    make:'', model:'', trim:'', year:'', month:'', engine:'', fuel:'', euro:'',
-    transmission:'', drive:'', km:'', origin:'GCC', vin:'', options:'', notes:''
+    make: '', model: '', trim: '', year: '', month: '',
+    engine: '', fuel: '', euro: '', transmission: '', drive: '',
+    km: '', origin: 'GCC', vin: '', options: '', notes: ''
   })
-  const set = (k: keyof FormState) => (v: string) => setForm({ ...form, [k]: v })
+
+  const set = (key: keyof FormState) => (v: string) => setForm({ ...form, [key]: v })
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -55,6 +82,7 @@ export default function NewVehiclePage() {
   return (
     <form onSubmit={submit} className="p-4 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Nuovo Veicolo</h1>
+
       <div className="grid md:grid-cols-3 gap-4">
         <Field label="Marca" value={form.make} onChange={set('make')} placeholder="Maserati" />
         <Field label="Modello" value={form.model} onChange={set('model')} placeholder="GranCabrio" />
@@ -72,7 +100,12 @@ export default function NewVehiclePage() {
         <Field label="Optional" value={form.options} onChange={set('options')} />
         <Field label="Note" value={form.notes} onChange={set('notes')} />
       </div>
-      <button type="submit" disabled={loading} className="mt-6 bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-60">
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="mt-6 bg-blue-600 text-white px-4 py-2 rounded-lg disabled:opacity-60"
+      >
         {loading ? 'Salvataggio…' : 'Salva'}
       </button>
     </form>
